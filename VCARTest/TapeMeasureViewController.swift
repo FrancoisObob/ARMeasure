@@ -1,5 +1,5 @@
 //
-//  ThirdViewController.swift
+//  TapeMeasureViewController.swift
 //  VCARTest
 //
 //  Created by François Lambert on 30/07/2018.
@@ -10,13 +10,22 @@ import UIKit
 import SceneKit
 import ARKit
 
-class ThirdViewController: UIViewController, ARSCNViewDelegate {
+protocol TapeMeasureDelegate: class {
+    func didMeasure(_ measures: [Measure])
+}
+
+class TapeMeasureViewController: UIViewController, ARSCNViewDelegate {
+    
+    weak var delegate: TapeMeasureDelegate?
 
     @IBOutlet weak var sceneView: ARSCNView!
     @IBOutlet weak var statusTextView: UITextView!
     
-    var nodes: [SphereNode] = []
+    var measures = [Measure]()
+    var step = 0
+    var spheres: [SphereNode] = []
     var labels: [LabelNode] = []
+    var lines: [SCNNode] = []
     var trackingState: ARCamera.TrackingState?
     var distance: Float?
     
@@ -58,8 +67,8 @@ class ThirdViewController: UIViewController, ARSCNViewDelegate {
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func didTapClear(_ sender: UIButton) {
-        nodes.removeAll()
+    @IBAction func didTapClear(_ sender: UIButton?) {
+        spheres.removeAll()
         labels.removeAll()
         sceneView.scene.rootNode.enumerateChildNodes { (node, stop) in
             node.removeFromParentNode()
@@ -72,21 +81,36 @@ class ThirdViewController: UIViewController, ARSCNViewDelegate {
         let tapLocation = sender.location(in: sceneView)
         let hitTestResults = sceneView.hitTest(tapLocation, types: .featurePoint)
         if let result = hitTestResults.first {
+            if spheres.count == 2 { didTapClear(nil) }
+            
             let position = SCNVector3.positionFrom(matrix: result.worldTransform)
+            
             let sphere = SphereNode(position: position)
-            let label = LabelNode(position: position, index: nodes.count + 1)
+            let label = LabelNode(position: position, index: spheres.count + 1)
+            
             sceneView.scene.rootNode.addChildNode(sphere)
             sceneView.scene.rootNode.addChildNode(label)
-            let lastNode = nodes.last
-            nodes.append(sphere)
+            
+            let lastSphere = spheres.last
+            
+            spheres.append(sphere)
             labels.append(label)
-            if let lastNode = lastNode {
+            
+            if let lastNode = lastSphere {
                 distance = lastNode.position.distance(to: sphere.position)
                 
                 let line = SCNNode.lineNode(from: lastNode.position, to: sphere.position)
-//                let line = SCNNode(geometry: SCNGeometry.lineFrom(vector: lastNode.position, toVector: sphere.position))
+                
                 sceneView.scene.rootNode.addChildNode(line)
+                lines.append(line)
             }
+//            if spheres.count > 2 {
+//                sceneView.scene.rootNode.enumerateChildNodes { (node, stop) in
+//                    if node == spheres.first || node == lines.first {
+//                        node.removeFromParentNode()
+//                    }
+//                }
+//            }
             setStatusText()
         }
     }

@@ -16,7 +16,8 @@
 		0FBC626C20CFEC8100358AEF /* VCARTestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FBC626B20CFEC8100358AEF /* VCARTestTests.swift */; };
 		0FBC627720CFEC8100358AEF /* VCARTestUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FBC627620CFEC8100358AEF /* VCARTestUITests.swift */; };
 		0FC3F2D32109F05A00485E69 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC3F2D22109F05A00485E69 /* SecondViewController.swift */; };
-		0FC3F2D5210F166E00485E69 /* ThirdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC3F2D4210F166E00485E69 /* ThirdViewController.swift */; };
+		0FC3F2D5210F166E00485E69 /* TapeMeasureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC3F2D4210F166E00485E69 /* TapeMeasureViewController.swift */; };
+		0FC3F2D7210F665700485E69 /* FormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC3F2D6210F665700485E69 /* FormViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,7 +53,8 @@
 		0FBC627620CFEC8100358AEF /* VCARTestUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VCARTestUITests.swift; sourceTree = "<group>"; };
 		0FBC627820CFEC8100358AEF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0FC3F2D22109F05A00485E69 /* SecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
-		0FC3F2D4210F166E00485E69 /* ThirdViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdViewController.swift; sourceTree = "<group>"; };
+		0FC3F2D4210F166E00485E69 /* TapeMeasureViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapeMeasureViewController.swift; sourceTree = "<group>"; };
+		0FC3F2D6210F665700485E69 /* FormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,7 +108,8 @@
 				0FBC625420CFEC7F00358AEF /* AppDelegate.swift */,
 				0FBC625820CFEC7F00358AEF /* FirstViewController.swift */,
 				0FC3F2D22109F05A00485E69 /* SecondViewController.swift */,
-				0FC3F2D4210F166E00485E69 /* ThirdViewController.swift */,
+				0FC3F2D6210F665700485E69 /* FormViewController.swift */,
+				0FC3F2D4210F166E00485E69 /* TapeMeasureViewController.swift */,
 				0FBC625A20CFEC7F00358AEF /* Main.storyboard */,
 				0FBC625620CFEC7F00358AEF /* art.scnassets */,
 				0FBC625D20CFEC8100358AEF /* Assets.xcassets */,
@@ -268,7 +271,8 @@
 			files = (
 				0FC3F2D32109F05A00485E69 /* SecondViewController.swift in Sources */,
 				0FBC625920CFEC7F00358AEF /* FirstViewController.swift in Sources */,
-				0FC3F2D5210F166E00485E69 /* ThirdViewController.swift in Sources */,
+				0FC3F2D5210F166E00485E69 /* TapeMeasureViewController.swift in Sources */,
+				0FC3F2D7210F665700485E69 /* FormViewController.swift in Sources */,
 				0FBC625520CFEC7F00358AEF /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
