@@ -19,7 +19,15 @@ class TapeMeasureViewController: UIViewController, ARSCNViewDelegate {
     weak var delegate: TapeMeasureDelegate?
 
     @IBOutlet weak var sceneView: ARSCNView!
-    @IBOutlet weak var statusTextView: UITextView!
+    
+    @IBOutlet weak var loadingView: UIView!
+    @IBOutlet weak var loadingLabel: UILabel!
+    
+    @IBOutlet weak var measuringView: UIView!
+    @IBOutlet weak var measuringLabel: UILabel!
+    
+    @IBOutlet weak var validateView: UIView!
+    @IBOutlet weak var validateLabel: UILabel!
     
     var measures = [Measure]()
     var step = 0
@@ -33,11 +41,6 @@ class TapeMeasureViewController: UIViewController, ARSCNViewDelegate {
         super.viewDidLoad()
 
         sceneView.delegate = self
-        
-        // Set the initial distance
-        distance = 0.0
-        // Display the initial status
-        setStatusText()
         
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         tapRecognizer.numberOfTapsRequired = 1
@@ -61,10 +64,35 @@ class TapeMeasureViewController: UIViewController, ARSCNViewDelegate {
         // Pause the view's session
         sceneView.session.pause()
     }
+    
+    func loader(show: Bool, state: String? = nil) {
+        loadingView.isHidden = !show
+        measuringView.isHidden = show
+        validateView.isHidden = show
+        loadingLabel.text = state ?? ""
+    }
+    
+    func displayMeasuring() {
+        measuringView.isHidden = false
+        validateView.isHidden = true
+        measuringLabel.text = "Mesure de la \(measures[step].label)"
+    }
+    
+    func displayValidating() {
+        measuringView.isHidden = true
+        validateView.isHidden = false
+        
+        guard let distance = distance else { return }
+        validateLabel.text = measures[step].label + " : " + String(describing: Int(distance * 100.0)) + "cm"
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    @IBAction func didTapDismiss(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
     }
     
     @IBAction func didTapClear(_ sender: UIButton?) {
@@ -73,15 +101,33 @@ class TapeMeasureViewController: UIViewController, ARSCNViewDelegate {
         sceneView.scene.rootNode.enumerateChildNodes { (node, stop) in
             node.removeFromParentNode()
         }
-        distance = 0.0
-        setStatusText()
+    }
+    
+    @IBAction func didTapRetry(_ sender: Any) {
+        didTapClear(nil)
+        displayMeasuring()
+    }
+    
+    @IBAction func didTapValidate(_ sender: Any) {
+        var currentMeasure = self.measures[step]
+        currentMeasure.value = distance
+        self.measures[step] = currentMeasure
+        
+        delegate?.didMeasure(self.measures)
+        
+        didTapClear(nil)
+        
+        step += 1
+        distance = nil
+        
+        displayMeasuring()
     }
     
     @objc func handleTap(sender: UITapGestureRecognizer) {
         let tapLocation = sender.location(in: sceneView)
         let hitTestResults = sceneView.hitTest(tapLocation, types: .featurePoint)
         if let result = hitTestResults.first {
-            if spheres.count == 2 { didTapClear(nil) }
+            if spheres.count == 2 { return }
             
             let position = SCNVector3.positionFrom(matrix: result.worldTransform)
             
@@ -103,15 +149,9 @@ class TapeMeasureViewController: UIViewController, ARSCNViewDelegate {
                 
                 sceneView.scene.rootNode.addChildNode(line)
                 lines.append(line)
+                
+                displayValidating()
             }
-//            if spheres.count > 2 {
-//                sceneView.scene.rootNode.enumerateChildNodes { (node, stop) in
-//                    if node == spheres.first || node == lines.first {
-//                        node.removeFromParentNode()
-//                    }
-//                }
-//            }
-            setStatusText()
         }
     }
     
@@ -119,39 +159,27 @@ class TapeMeasureViewController: UIViewController, ARSCNViewDelegate {
     
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
         trackingState = camera.trackingState
-        setStatusText()
-    }
-    
-    func setStatusText() {
-        var text = "Tracking: \(getTrackigDescription())\n"
-        if let distance = distance { text += "Distance: \(String(format:"%.2f cm", distance * 100.0))" }
-        statusTextView?.text = text
-    }
-    
-    func getTrackigDescription() -> String {
-        var description = ""
+        
         if let t = trackingState {
             switch(t) {
             case .notAvailable:
-                description = "TRACKING UNAVAILABLE"
+                loader(show: true, state: "TRACKING UNAVAILABLE")
             case .normal:
-                description = "TRACKING NORMAL"
+                loader(show: false)
+                displayMeasuring()
             case .limited(let reason):
                 switch reason {
                 case .excessiveMotion:
-                    description =
-                    "TRACKING LIMITED - Too much camera movement"
+                    loader(show: true, state: "TRACKING LIMITED :\nToo much camera movement")
                 case .insufficientFeatures:
-                    description =
-                    "TRACKING LIMITED - Not enough surface detail"
+                    loader(show: true, state: "TRACKING LIMITED :\nNot enough surface detail")
                 case .initializing:
-                    description = "INITIALIZING"
+                    loader(show: true, state: "INITIALIZING")
                 case .relocalizing:
-                    description = "RELOCALIZING"
+                    loader(show: true, state: "RELOCALIZING")
                 }
             }
         }
-        return description
     }
     
     func session(_ session: ARSession, didFailWithError error: Error) {
