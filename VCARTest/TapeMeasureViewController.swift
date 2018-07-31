@@ -91,13 +91,14 @@ class TapeMeasureViewController: UIViewController, ARSCNViewDelegate {
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func didTapDismiss(_ sender: Any) {
+    @IBAction func didTapDismiss(_ sender: Any?) {
         dismiss(animated: true, completion: nil)
     }
     
     @IBAction func didTapClear(_ sender: UIButton?) {
         spheres.removeAll()
         labels.removeAll()
+        lines.removeAll()
         sceneView.scene.rootNode.enumerateChildNodes { (node, stop) in
             node.removeFromParentNode()
         }
@@ -115,12 +116,17 @@ class TapeMeasureViewController: UIViewController, ARSCNViewDelegate {
         
         delegate?.didMeasure(self.measures)
         
-        didTapClear(nil)
-        
-        step += 1
-        distance = nil
-        
-        displayMeasuring()
+        // Dismiss
+        if step == measures.count - 1 {
+            didTapDismiss(nil)
+            
+        // Next Step
+        } else {
+            didTapClear(nil)
+            step += 1
+            distance = nil
+            displayMeasuring()
+        }
     }
     
     @objc func handleTap(sender: UITapGestureRecognizer) {
