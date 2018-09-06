@@ -99,6 +99,7 @@ class TapeMeasureViewController: UIViewController, ARSCNViewDelegate {
         spheres.removeAll()
         labels.removeAll()
         lines.removeAll()
+        
         sceneView.scene.rootNode.enumerateChildNodes { (node, stop) in
             node.removeFromParentNode()
         }

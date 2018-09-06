@@ -43,16 +43,16 @@ class FormViewController: UIViewController {
 extension FormViewController: TapeMeasureDelegate {
     func didMeasure(_ measures: [Measure]) {
         measures.map({ print("\($0.label) : \($0.value) \($0.unit.rawValue)\n")})
-        if let height = measures[0].value {
-            heightTextField.text = String(describing: Int(height * 100.0)) + "cm"
-        }
         
-        if let width = measures[1].value {
-            widthTextField.text = String(describing: Int(width * 100.0)) + "cm"
-        }
-        
-        if let depth = measures[2].value {
-            depthTextField.text = String(describing: Int(depth * 100.0)) + "cm"
+        for (index, measure) in measures.enumerated() {
+            guard let value = measure.value else { return }
+            if index == 0 {
+                heightTextField.text = String(describing: Int(value * 100.0)) + "cm"
+            } else if index == 1 {
+                widthTextField.text = String(describing: Int(value * 100.0)) + "cm"
+            } else if index == 2 {
+                depthTextField.text = String(describing: Int(value * 100.0)) + "cm"
+            }
         }
     }
 }
